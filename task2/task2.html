@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task 2</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Add some CSS to style the table */
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <button id="add-entry-button">Add New Entry</button>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Datetime</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data rows will be added here dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        $(document).ready(function () {
+            // Function to add a new row to the table
+            function addRow(data) {
+                var row = $('<tr>');
+                row.append($('<td>').text(data.ID));
+                var nameCell = $('<td>').text(data.name);
+                var datetimeCell = $('<td>').text(data.datetime);
+                var actionCell = $('<td>');
+                var editButton = $('<button>').text('Edit');
+                var deleteButton = $('<button>').text('Delete');
+                actionCell.append(editButton, deleteButton);
+                row.append(nameCell, datetimeCell, actionCell);
+                $('#data-table tbody').append(row);
+            }
+
+            // Function to handle adding a new entry
+            $('#add-entry-button').click(function () {
+                // Create input field and Send button
+                var nameInput = $('<input>').attr('type', 'text').attr('placeholder', 'Enter Name');
+                var sendButton = $('<button>').text('Send');
+                var newRow = $('<tr>');
+                newRow.append($('<td>').text('New')); // Temporary value for ID
+                newRow.append($('<td>').append(nameInput, sendButton));
+                newRow.append($('<td>').text('Pending...')); // Placeholder for datetime
+                newRow.append($('<td>').text('')); // Placeholder for Edit and Delete buttons
+                $('#data-table tbody').prepend(newRow);
+
+                // Handle the click event on the Send button
+                sendButton.click(function () {
+                    var newName = nameInput.val();
+
+                    // Mock API request to the backend to add a new entry
+                    // Replace this with an actual API call to your backend
+                    mockAddNewEntry(newName, function (newEntry) {
+                        if (newEntry) {
+                            newRow.find('td').eq(0).text(newEntry.ID);
+                            newRow.find('td').eq(1).text(newEntry.name);
+                            newRow.find('td').eq(2).text(newEntry.datetime);
+                            newRow.find('td').eq(3).append($('<button>').text('Edit'), $('<button>').text('Delete'));
+
+                            // Add event handlers for edit and delete buttons
+                            newRow.find('button:contains("Edit")').click(function () {
+                                var nameCell = newRow.find('td').eq(1);
+                                var editButton = newRow.find('button:contains("Edit")');
+                                nameCell.attr('contenteditable', true);
+                                nameCell.focus();
+                                editButton.text('Save');
+
+                                // Handle the click event on the Save button
+                                editButton.click(function () {
+                                    nameCell.attr('contenteditable', false);
+                                    editButton.text('Edit');
+
+                                    // Mock API request to update the name on the backend
+                                    // Replace this with an actual API call to your backend
+                                    mockUpdateEntry(newEntry.ID, nameCell.text(), function (success) {
+                                        if (!success) {
+                                            alert('Error updating the entry on the backend.');
+                                        }
+                                    });
+                                });
+                            });
+
+                            newRow.find('button:contains("Delete")').click(function () {
+                                // Mock API request to delete the entry on the backend
+                                // Replace this with an actual API call to your backend
+                                mockDeleteEntry(newEntry.ID, function (success) {
+                                    if (success) {
+                                        newRow.remove();
+                                    } else {
+                                        alert('Error deleting the entry on the backend.');
+                                    }
+                                });
+                            });
+                        } else {
+                            alert('Error adding the new entry on the backend.');
+                        }
+                    });
+                });
+            });
+
+            // Mock functions for API requests
+            function mockAddNewEntry(name, callback) {
+                // Simulate an asynchronous API call to add a new entry
+                setTimeout(function () {
+                    var newEntry = {
+                        ID: Math.floor(Math.random() * 1000), // Mock ID generation
+                        name: name,
+                        datetime: new Date().toLocaleString()
+                    };
+                    callback(newEntry);
+                }, 1000); // Simulate a delay of 1 second
+            }
+
+            function mockUpdateEntry(ID, newName, callback) {
+                // Simulate an asynchronous API call to update an entry
+                setTimeout(function () {
+                    // Assume the update is successful
+                    callback(true);
+                }, 1000); // Simulate a delay of 1 second
+            }
+
+            function mockDeleteEntry(ID, callback) {
+                // Simulate an asynchronous API call to delete an entry
+                setTimeout(function () {
+                    // Assume the delete is successful
+                    callback(true);
+                }, 1000); // Simulate a delay of 1 second
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task 1</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        button {
+            display: block;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="button-container">
+        <!-- Buttons will be added here dynamically -->
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Function to swap two elements in the DOM
+            function swapElements(element1, element2) {
+                // Clone the elements to retain their properties
+                var clone1 = element1.clone();
+                var clone2 = element2.clone();
+                element1.replaceWith(clone2);
+                element2.replaceWith(clone1);
+            }
+
+            // Function to handle button click
+            $('#button-container').on('click', 'button', function () {
+                // console.log("click",$(this));
+                var clickedButton = $(this);
+                var previousButton = clickedButton.prev();
+                var nextButton = clickedButton.next();
+
+                if (previousButton.length > 0) {
+                    // Swap with the previous button
+                    swapElements(clickedButton, previousButton);
+                } else if (nextButton.length > 0) {
+                    // Swap with the next button
+                    swapElements(clickedButton, nextButton);
+                }
+            });
+
+            // Create 3 buttons with names 1, 2, 3
+            for (var i = 1; i <= 3; i++) {
+                var button = $('<button>').text(i);
+                $('#button-container').append(button);
+            }
+        });
+    </script>
+</body>
+</html>
